@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-4.3.xsd
+	http://www.springframework.org/schema/mvc
+	http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+	">
+
+	<!-- spring注解驱动 -->
+	<context:annotation-config></context:annotation-config>
+	<!-- 组件扫描的范围 -->
+	<context:component-scan base-package="com.mhy"></context:component-scan>
+	<!-- mvc注解驱动 -->
+	<mvc:annotation-driven></mvc:annotation-driven>
+	<!--载入静态资源文件-->
+	<mvc:resources mapping="/static/**" location="/static/"/>
+	<!-- springmvc视图处理器 -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+
+	<!-- 数据源 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" >
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" ></property>
+		<property name="url" value="jdbc:oracle:thin:@localhost:1521:orcl" ></property>
+		<property name="username" value="epet" ></property>
+		<property name="password" value="oracle" ></property>
+	</bean>
+
+	<!-- 连接工厂 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean"  >
+		<property name="dataSource" ref="dataSource" ></property>
+		<!-- 引入mybatis配置文件-->
+		<!--<property name="configLocation" value="classpath:mybatis-config.xml" ></property>-->
+		<!--引入实体映射文件-->
+		<property name="mapperLocations"  >
+			<array>
+				<value>classpath:mapper/Iuser.xml</value>
+			</array>
+		</property>
+	</bean>
+
+	<!-- dao实现类对象的配置 -->
+	<!--多个自动配置-->
+	<bean id="configurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer" >
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" ></property>
+		<property name="basePackage" value="com.mhy.dao" ></property>
+	</bean>
+
+	<!--文件上传的操作对象-->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="utf-8"></property>
+		<property name="maxUploadSize" value="100000000"></property>
+	</bean>
+
+</beans>
